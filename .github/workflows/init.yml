@@ -43,6 +43,7 @@ jobs:
               line=${line// /}
               line=${line//\"/}
               arr=(${line//:/ })
+              echo ${arr[0]}
               echo "::set-output name=${arr[0]}::${arr[1]}"
              fi 
           done
