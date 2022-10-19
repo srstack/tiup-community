@@ -1,0 +1,53 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Init Mirror
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Install tiup
+        run: curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+
+      - name: Init tiup-community mirror
+        run: |
+          source ~/.profile
+          mkdir -p tiup-community
+          tiup mirror init tiup-community
+      
+      - id: set-secret-key
+        name: GET secrets Key 
+        run : |
+          curl -X GET \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer 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"   
+          https://api.github.com/repos/12Cat-TiDB/tiup-community/actions/secrets/public-key | \
+          while read line  
+          do 
+            if [[ $line == *key* ]]
+            then 
+              line=${line// /}
+              line=${line//\"/}
+              arr=(${line//:/ })
+              echo "::set-output name=${arr[0]}::${arr[1]}"
+             fi 
+          done
+
+      - name: test
+        run: |
+          echo ${{ steps.set-secret-key.outputs.key }} 
+          echo ${{ steps.set-secret-key.outputs.id }} 
+
