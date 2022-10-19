@@ -34,7 +34,7 @@ jobs:
         run : |
           curl -X GET \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: ${{ secrets.ACCESS_TOKEN }}"   \
+          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}"   \
           https://api.github.com/repos/12Cat-TiDB/tiup-community/actions/secrets/public-key | \
           while read line  
           do 
