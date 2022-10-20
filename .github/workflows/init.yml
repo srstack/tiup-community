@@ -53,6 +53,10 @@ jobs:
           rm -rf tiup-${{ github.repository_owner }}/keys/*json
           tree
       
+      - name: Create github page docs
+        run: |
+          ln -s tiup-${{ github.repository_owner }} docs
+      
       - name: Push Mirror
         uses: actions-js/push@master
         with:
