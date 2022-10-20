@@ -46,11 +46,11 @@ jobs:
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
           tree
       
-      - id: Build-component
-        name: build component
+      # - id: Build-component
+      #   name: build component
 
 
-      - id: Publish-component
+      # - id: Publish-component
 
 
       # - name: Encrypt keys
