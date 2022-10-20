@@ -23,10 +23,6 @@ jobs:
       - id: install-tiup
         name: Install tiup
         run: |
-          TMP_DIR=`mktemp -d`
-          export TIUP_HOME="$TMP_DIR/home"
-          echo ::set-output name=TIUP_HOME::$TIUP_HOME
-          rm -rf $TIUP_HOME && mkdir -p $TIUP_HOME/{bin,keys}
           curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
 
       - id: init-mirror
@@ -40,4 +36,6 @@ jobs:
           tiup mirrot grant ${{ github.repository_owne }}
 
           tree
+
+
 
