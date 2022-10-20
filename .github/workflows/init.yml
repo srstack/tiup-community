@@ -35,8 +35,9 @@ jobs:
           tiup mirror init tiup-community
           tiup mirror set tiup-community
           echo ::set-output name=TIUP_HOME::$TIUP_HOME
-          tiup mirrot grant ${{ github.repository_owne }}
+          tiup mirror grant ${{ github.repository_owne }}
 
           tree
+
 
 
