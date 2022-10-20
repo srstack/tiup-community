@@ -28,16 +28,25 @@ jobs:
       - id: init-mirror
         name: Init tiup-community mirror
         run: |
-
-          tree
           source ~/.profile
           mkdir -p tiup-community 
           tiup mirror init tiup-community
           tiup mirror set tiup-community
-          echo ::set-output name=TIUP_HOME::$TIUP_HOME
           tiup mirror grant ${{ github.repository_owne }}
 
+      - name: Encrypted keys
+        working-directory: ./tiup-community
+
+        run: |
+          mkdir -p ~/.tiup/keys tiup-community/encrypt_keys
+          echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+          for file in tiup-community/keys/*
+          do
+            if test -f tiup-community/keys/$file
+            then
+              openssl enc -aes-256-cbc -in tiup-community/keys/$file -out tiup-community/encrypt_keys/$file
+            fi
+          done
+          rm -rf keys
           tree
-
-
 
