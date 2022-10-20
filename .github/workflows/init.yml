@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  init-mirror:
+  Init-Mirror:
     runs-on: ubuntu-latest
 
     steps:
@@ -42,9 +42,11 @@ jobs:
           do
             if test -f $file
             then
-              openssl enc -aes-256-cbc -in $file -out $file.encrypt
+              openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
             fi
           done
           rm -rf tiup-community/keys/*json
           tree
+      
+
 
