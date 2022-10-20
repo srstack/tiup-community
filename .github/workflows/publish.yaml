@@ -7,8 +7,6 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   # push:
   #   branches: [ "main" ]
-  # pull_request:
-  #   branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,12 +34,16 @@ jobs:
               de_file=${file//.encrypt/}
               echo $de_file
               openssl enc -aes-256-cbc -d -in $file -out $de_file -k ~/.tiup/keys/tiup.key
-              cat $de_file
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
           tree
+      
+      - id: Build-component
+        name: build component
 
+
+      - id: Publish-component
 
 
       # - name: Encrypt keys
@@ -52,7 +54,7 @@ jobs:
       #     do
       #       if [[ $file == *json ]]
       #       then
-      #         openssl enc -aes-256-cbc -d -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
+      #         openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
       #       fi
       #     done
       #     rm -rf tiup-${{ github.repository_owner }}/keys/*json
