@@ -29,7 +29,7 @@ jobs:
         name: Init tiup-community mirror
         run: |
           source ~/.profile
-          mkdir -p tiup-mirror ~/.tiup/keys
+          mkdir -p tiup-${{ github.repository_owner }} ~/.tiup/keys
           tiup mirror init tiup-${{ github.repository_owner }}
           tiup mirror set tiup-${{ github.repository_owner }}
           tiup mirror grant  ${{ github.repository_owner }} -k tiup-${{ github.repository_owner }}/keys/private.json
