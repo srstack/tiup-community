@@ -29,23 +29,23 @@ jobs:
         name: Init tiup-community mirror
         run: |
           source ~/.profile
-          mkdir -p tiup-community 
-          tiup mirror init tiup-community
-          tiup mirror set tiup-community
-          tiup mirror grant  ${{ github.repository_owner }}
+          mkdir -p tiup-mirror ~/.tiup/keys
+          tiup mirror init tiup-${{ github.repository_owner }}
+          tiup mirror set tiup-${{ github.repository_owner }}
+          tiup mirror grant  ${{ github.repository_owner }} -k tiup-${{ github.repository_owner }}/keys/private.json
 
       - name: Encrypted keys
         run: |
           mkdir -p ~/.tiup/keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
-          for file in tiup-community/keys/*
+          for file in tiup-${{ github.repository_owner }}/keys/*
           do
             if test -f $file
             then
               openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
             fi
           done
-          rm -rf tiup-community/keys/*json
+          rm -rf tiup-${{ github.repository_owner }}/keys/*json
           tree
       
       - name: Push Mirror
