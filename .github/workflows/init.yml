@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Init-Mirror:
+  init-mirror:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,11 +32,11 @@ jobs:
           mkdir -p tiup-community 
           tiup mirror init tiup-community
           tiup mirror set tiup-community
-          tiup mirror grant ${{ github.repository_owne }}
+          tiup mirror grant  ${{ github.repository_owner }}
 
       - name: Encrypted keys
         run: |
-          mkdir -p ~/.tiup/keys tiup-community/encrypt_keys
+          mkdir -p ~/.tiup/keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-community/keys/*
           do
@@ -48,5 +48,7 @@ jobs:
           rm -rf tiup-community/keys/*json
           tree
       
-
-
+      - name: Push Mirror
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
