@@ -39,14 +39,15 @@ jobs:
 
           tiup mirror grant  ${{ github.repository_owner }} -k tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
         
-      - name: Encrypted keys
+      - name: Encrypt keys
         run: |
           mkdir -p ~/.tiup/keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
           do
-            if test -f $file
+            if [[ $file == *json ]]
             then
+              echo $file
               openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
             fi
           done

@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Init-Mirror
+name: Publish tiup-community component
 
 # Controls when the workflow will run
 on:
@@ -23,3 +23,41 @@ jobs:
       - id: install-tiup
         name: Install tiup
         run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+
+      - name: Decrypt keys
+        run: |
+          echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+          for file in tiup-${{ github.repository_owner }}/keys/*
+          do
+            if [[ $file == *encrypt ]]
+            then
+              de_file=${file//.encrypt/}
+              echo $de_file
+              openssl enc -aes-256-cbc -in $file -out $de_file -k ~/.tiup/keys/tiup.key
+            fi
+          done
+          rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
+          tree
+
+
+
+      # - name: Encrypt keys
+      #   run: |
+      #     mkdir -p ~/.tiup/keys
+      #     echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+      #     for file in tiup-${{ github.repository_owner }}/keys/*
+      #     do
+      #       if [[ $file == *json ]]
+      #       then
+      #         openssl enc -aes-256-cbc -d -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
+      #       fi
+      #     done
+      #     rm -rf tiup-${{ github.repository_owner }}/keys/*json
+      #     tree
+      
+      # - name: Push Mirror
+      #   uses: actions-js/push@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     message: publish component to tiup-community mirror ${{ github.repository_owner }}
