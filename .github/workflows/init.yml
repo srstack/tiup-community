@@ -32,8 +32,13 @@ jobs:
           mkdir -p tiup-${{ github.repository_owner }} ~/.tiup/keys
           tiup mirror init tiup-${{ github.repository_owner }}
           tiup mirror set tiup-${{ github.repository_owner }}
-          tiup mirror grant  ${{ github.repository_owner }} -k tiup-${{ github.repository_owner }}/keys/private.json
+          
+          tiup mirror genkey -n ${{ github.repository_owner }}
 
+          cp~/.tiup/keys/${{ github.repository_owner }}.json tiup-${{ github.repository_owner }}/keys/
+
+          tiup mirror grant  ${{ github.repository_owner }} -k tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
+        
       - name: Encrypted keys
         run: |
           mkdir -p ~/.tiup/keys
