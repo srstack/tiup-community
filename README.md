@@ -11,7 +11,14 @@ openssl rand -base64 32 > tiup.key
 2. SET Github Actions secrets
 Store the resulting `tiup.key` in Github Actions secrets, named `TIUP_KEY`
 
-3. RUN Init Mirror
+3. Delete init.lock
+```
+rm init.lock
+git commit -a ''
+
+```
+
+4. RUN Init Mirror
 Run Init-Mirror Github Action Workflow
 
 ## Config Github Page

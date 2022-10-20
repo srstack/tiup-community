@@ -19,13 +19,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: C
         
-      - id: install-tiup
+      - id: Install-tiup
         name: Install tiup
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
 
-      - id: init-mirror
+      - id: Init-mirror
         name: Init tiup-community mirror
         run: |
           source ~/.profile
@@ -53,9 +55,10 @@ jobs:
           rm -rf tiup-${{ github.repository_owner }}/keys/*json
           tree
       
-      - name: Create github page docs
+      - name: Create github page docs and lock
         run: |
           ln -s tiup-${{ github.repository_owner }} docs
+          touch init.lock
       
       - name: Push Mirror
         uses: actions-js/push@master

@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         
-      - id: install-tiup
+      - id: Install-tiup
         name: Install tiup
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
