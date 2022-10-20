@@ -25,7 +25,7 @@ jobs:
           if [ -f init.lock ]
           then
             echo "tiup-${{ github.repository_owner }} mirror has been initialized"
-            exit 1
+            exit 2
           fi
           
           ls -l
