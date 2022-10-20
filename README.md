@@ -25,4 +25,5 @@ Run Init-Mirror Github Action Workflow
 
 3. View github page
 - `{{ your_repo_name }}/tiup-community/root.json`
-- like: https://12cat-tidb.github.io/tiup-community/root.json
+
+like: https://12cat-tidb.github.io/tiup-community/root.json
