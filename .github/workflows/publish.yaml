@@ -35,7 +35,7 @@ jobs:
             then
               de_file=${file//.encrypt/}
               echo $de_file
-              openssl enc -aes-256-cbc -in $file -out $de_file -k ~/.tiup/keys/tiup.key
+              openssl enc -aes-256-cbc -d -in $file -out $de_file -k ~/.tiup/keys/tiup.key
               cat $de_file
             fi
           done
