@@ -40,6 +40,7 @@ jobs:
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-community/keys/*
           do
+            echo $file
             if test -f tiup-community/keys/$file
             then
               openssl enc -aes-256-cbc -in tiup-community/keys/$file -out tiup-community/encrypt_keys/$file
