@@ -28,6 +28,8 @@ jobs:
       - id: init-mirror
         name: Init tiup-community mirror
         run: |
+
+          tree
           source ~/.profile
           mkdir -p tiup-community 
           tiup mirror init tiup-community
@@ -36,6 +38,5 @@ jobs:
           tiup mirrot grant ${{ github.repository_owne }}
 
           tree
-
 
 
