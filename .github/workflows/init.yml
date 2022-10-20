@@ -35,8 +35,6 @@ jobs:
           tiup mirror grant ${{ github.repository_owne }}
 
       - name: Encrypted keys
-        working-directory: ./tiup-community
-
         run: |
           mkdir -p ~/.tiup/keys tiup-community/encrypt_keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
@@ -47,6 +45,6 @@ jobs:
               openssl enc -aes-256-cbc -in tiup-community/keys/$file -out tiup-community/encrypt_keys/$file
             fi
           done
-          rm -rf keys
+          rm -rf tiup-community/keys
           tree
 
