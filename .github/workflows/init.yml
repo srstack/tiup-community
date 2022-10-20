@@ -20,7 +20,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: C
+      - name: Check Init lock
+        run: |
+          if [ -f init.lock ]
+          then
+            echo "tiup-${{ github.repository_owner }} mirror has been initialized"
+            exit 1
+          fi
+          
+          ls -l
+          echo "clean old mirror"
+          rm -rf docs tiup-*
+          ls -l
+
         
       - id: Install-tiup
         name: Install tiup

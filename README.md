@@ -14,8 +14,8 @@ Store the resulting `tiup.key` in Github Actions secrets, named `TIUP_KEY`
 3. Delete init.lock
 ```
 rm init.lock
-git commit -a ''
-
+git commit -a -m "delete init lock"
+git push
 ```
 
 4. RUN Init Mirror

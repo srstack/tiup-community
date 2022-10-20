@@ -17,7 +17,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        
+
+      - name: Check Init lock
+        run: |
+          if [ !-f init.lock ]
+          then
+            echo "tiup-${{ github.repository_owner }} mirror uninitialized"
+            exit 1
+          fi
+
       - id: Install-tiup
         name: Install tiup
         run: |
