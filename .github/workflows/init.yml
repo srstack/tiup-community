@@ -20,36 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         
-      - name: Install tiup
-        run: curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+      - id: install-tiup
+        name: Install tiup
+        run: |
+          TMP_DIR=`mktemp -d`
+          export TIUP_HOME="$TMP_DIR/home"
+          echo ::set-output name=TIUP_HOME::$TIUP_HOME
+          rm -rf $TIUP_HOME && mkdir -p $TIUP_HOME/{bin,keys}
+          curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
 
-      - name: Init tiup-community mirror
+      - id: init-mirror
+        name: Init tiup-community mirror
         run: |
           source ~/.profile
-          mkdir -p tiup-community
+          mkdir -p tiup-community 
           tiup mirror init tiup-community
-      
-      - id: set-secret-key
-        name: GET secrets Key 
-        run : |
-          curl -X GET \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}"   \
-          https://api.github.com/repos/12Cat-TiDB/tiup-community/actions/secrets/public-key | \
-          while read line  
-          do 
-            if [[ $line == *key* ]]
-            then 
-              line=${line// /}
-              line=${line//\"/}
-              arr=(${line//:/ })
-              echo ${arr[0]}
-              echo "::set-output name=${arr[0]}::${arr[1]}"
-             fi 
-          done
+          tiup mirror set tiup-community
+          echo ::set-output name=TIUP_HOME::$TIUP_HOME
+          tiup mirrot grant ${{ github.repository_owne }}
 
-      - name: test
-        run: |
-          echo ${{ steps.set-secret-key.outputs.key }} 
-          echo ${{ steps.set-secret-key.outputs.id }} 
+          tree
 
