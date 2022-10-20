@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Publish tiup-community component
+name: Publish component
 
 # Controls when the workflow will run
 on:
@@ -27,6 +27,7 @@ jobs:
 
       - name: Decrypt keys
         run: |
+          mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
           do
@@ -35,6 +36,7 @@ jobs:
               de_file=${file//.encrypt/}
               echo $de_file
               openssl enc -aes-256-cbc -in $file -out $de_file -k ~/.tiup/keys/tiup.key
+              cat $de_file
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
@@ -60,4 +62,4 @@ jobs:
       #   uses: actions-js/push@master
       #   with:
       #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     message: publish component to tiup-community mirror ${{ github.repository_owner }}
+      #     message: publish component to ${{ github.repository_owner }}

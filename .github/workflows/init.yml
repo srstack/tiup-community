@@ -47,7 +47,6 @@ jobs:
           do
             if [[ $file == *json ]]
             then
-              echo $file
               openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
             fi
           done
