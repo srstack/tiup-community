@@ -108,8 +108,13 @@ jobs:
         name: Build component
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            echo "alias tar=gtar" >> ~./.bash_profile && source ~/.bash_profile
+            alias tar=gtar
+            echo "alias tar=gtar" >> ~/.bash_profile && source ~/.bash_profile
+            echo "alias tar=gtar" >> ~/.zshrc && source ~/.zshrc
           fi
+
+          tar --version
+
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
@@ -126,8 +131,6 @@ jobs:
         run: |
           # make sure the repo is up-to-date
           git fetch origin && git reset --hard origin/main
-
-          openssl version
           mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
@@ -148,7 +151,6 @@ jobs:
           else
             export os=linux
           fi
-
           pkg=`echo ${{ steps.build-component.outputs.PKG_META }} | base64 -d`
           echo $pkg
           pkgname=`echo $pkg | jq -r '.package'`
