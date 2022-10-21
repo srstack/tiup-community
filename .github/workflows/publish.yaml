@@ -13,9 +13,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-component:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      PKG_CHANGED: ${{ steps.changed_dirs.outputs.changed }}
+      PKG_LIST: ${{ steps.changed_dirs.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Check for changed package files
+        id: changed_pkgs
+        working-directory: ${{ github.workspace }}/packages
+        run: |
+          export DIFF_BASE="HEAD~1"
+          changed_pkgs=`git diff --numstat $DIFF_BASE packages |\
+            awk -F ' ' '{print $3}'`
+          pkgs=()
+          for pkg in $changed_pkgs; do
+            if [[ $pkg != "*.TBD" ]]; then
+              continue
+            fi
+            pkgs+=($pkg)
+          done
+          if [ "${#pkgs[@]}" -lt 1 ]; then
+            echo "no package changed"
+            echo "::set-output name=changed::false"
+          else
+            echo "${#pkgs[@]} package(s) changed"
+            echo "::set-output name=changed::true"
+          fi
+          output=`printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s -c .`
+          echo $output
+          echo "::set-output name=matrix::$output"
+
+  build-component:
+    needs: [prepare]
+    if: needs.prepare.outputs.PKG_CHANGED == 'true'
     strategy:
       matrix:
+        pkg: ${{ fromJson(needs.prepare.outputs.PKG_LIST) }}
         os:
           - ubuntu-latest
           - macos-latest
@@ -73,7 +110,7 @@ jobs:
         run: |
           export TBD_CACHE=`mktemp -d`
           echo ::set-output name=TBD_CACHE::"$TBD_CACHE"
-          find ./packages/*.TBD -type f -exec ../TBD/TBD.sh {} \;
+          ../TBD/TBD.sh $pkg
         env:
           CI_NAME: githubaction
           TBD_CRI: none
