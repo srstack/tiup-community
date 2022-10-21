@@ -26,6 +26,7 @@ jobs:
         working-directory: ${{ github.workspace }}/packages
         run: |
           set -x
+          set +e
           export DIFF_BASE="HEAD~1"
           changed_pkgs=`git diff --numstat $DIFF_BASE |\
             awk -F ' ' '{print $3}' |\
