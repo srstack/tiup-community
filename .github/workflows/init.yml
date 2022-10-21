@@ -4,13 +4,13 @@ name: Init-Mirror
 
 # Controls when the workflow will run
 on:
+
   workflow_dispatch:
 
 jobs:
 
   check_lock:
     runs-on: ubuntu-latest
-    needs: [prepare]
     outputs:
       initialized: ${{ steps.changed_pkgs.outputs.initialized }}
     steps:
