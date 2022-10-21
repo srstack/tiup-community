@@ -61,11 +61,6 @@ jobs:
         arch:
           - amd64
           - arm64
-        # exclude:
-        #   - os: macos-latest
-        #     arch: arm64
-        #   - os: macos-latest
-        #     arch: amd64
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -98,11 +93,10 @@ jobs:
         run: |
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
-          result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -1`
+          result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
           result_enc=`echo -n $result | base64 -w 0`
           echo "PKG_META=$result_enc" >> $GITHUB_OUTPUT
         env:
-          CI_NAME: githubaction
           TBD_CRI: none
 
       - name: Decrypt keys
@@ -145,6 +139,8 @@ jobs:
           pkgdesc=`echo $pkg | jq -r '.description'`
           tarball=`echo $pkg | jq -r '.file'`
 
+          echo ::set-output name=COMP_NAME::$pkgname-$pkgver-$os-${{ matrix.arch }}
+          
           $HOME/.tiup/bin/tiup mirror publish $pkgname $pkgver \
             $tarball \
             $entry \
@@ -152,7 +148,7 @@ jobs:
             --arch ${{ matrix.arch }} \
             --key tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
 
-      - name: Encrypt keys
+      - name: Encrypt keys and clean up
         run: |
           mkdir -p ~/.tiup/keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
@@ -164,10 +160,10 @@ jobs:
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*json
-          ls -l tiup-${{ github.repository_owner }}/keys
-      
+          rm -rf ninja-build
+
       - name: Push Mirror
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: publish component to ${{ github.repository_owner }}
+          message: publish ${{ steps.publish-component.outputs.COMP_NAME }} to ${{ github.repository_owner }}
