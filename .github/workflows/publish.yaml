@@ -34,12 +34,12 @@ jobs:
         run: |
           mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+          cat ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
           do
             if [[ $file == *encrypt ]]
             then
               de_file=${file//.encrypt/}
-              echo $de_file
               openssl enc -aes-256-cbc -d -in $file -out $de_file -k ~/.tiup/keys/tiup.key
             fi
           done
