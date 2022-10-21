@@ -107,6 +107,9 @@ jobs:
       - id: build-component
         name: Build component
         run: |
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            export os=darwin
+          fi
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
@@ -138,10 +141,8 @@ jobs:
       - id: publish-component
         name: Publish component package
         run: |
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            export os=darwin
-          else
-            export os=linux
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            ln -s /usr/bin/tar /usr/bin/gtar
           fi
           pkg=`echo ${{ steps.build-component.outputs.PKG_META }} | base64 -d`
           echo $pkg
