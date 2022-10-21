@@ -22,11 +22,11 @@ jobs:
         arch:
           - amd64
           - arm64
-        exclude:
-          - os: macos-latest
-            arch: arm64
-          - os: macos-latest
-            arch: amd64
+        # exclude:
+        #   - os: macos-latest
+        #     arch: arm64
+        #   - os: macos-latest
+        #     arch: amd64
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -54,7 +54,7 @@ jobs:
             if [[ $file == *encrypt ]]
             then
               de_file=${file//.encrypt/}
-              openssl enc -aes-256-cbc -d -in $file -out $de_file -k ~/.tiup/keys/tiup.key
+              openssl enc -aes-256-cbc -d -md md5 -in $file -out $de_file -k ~/.tiup/keys/tiup.key
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
@@ -88,7 +88,7 @@ jobs:
       #     do
       #       if [[ $file == *json ]]
       #       then
-      #         openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
+      #         openssl enc -aes-256-cbc -md md5 -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key
       #       fi
       #     done
       #     rm -rf tiup-${{ github.repository_owner }}/keys/*json
