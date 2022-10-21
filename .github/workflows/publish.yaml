@@ -34,7 +34,6 @@ jobs:
         run: |
           mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
-          cat ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
           do
             if [[ $file == *encrypt ]]
