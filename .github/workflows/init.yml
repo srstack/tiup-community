@@ -27,11 +27,9 @@ jobs:
             echo "tiup-${{ github.repository_owner }} mirror has been initialized"
             exit 2
           fi
-          
-          ls -l
+
           echo "clean old mirror"
           rm -rf docs tiup-*
-          ls -l
 
         
       - id: Install-tiup
