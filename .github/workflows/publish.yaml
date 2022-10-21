@@ -25,6 +25,8 @@ jobs:
         exclude:
           - os: macos-latest
             arch: arm64
+          - os: macos-latest
+            arch: amd64
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -62,6 +64,9 @@ jobs:
       - id: prepare-tbd
         name: Prepare TBD
         run: git clone https://github.com/reproducible-tidb/TBD.git ../TBD
+
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
 
       - id: Build-component
         name: build component
