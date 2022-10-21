@@ -85,22 +85,6 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
           ~/.tiup/bin/tiup mirror set tiup-${{ github.repository_owner }}
 
-      - name: Decrypt keys
-        run: |
-          openssl version
-          mkdir -p ~/.tiup/keys/
-          echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
-          for file in tiup-${{ github.repository_owner }}/keys/*
-          do
-            if [[ $file == *encrypt ]]
-            then
-              de_file=${file//.encrypt/}
-              openssl aes-256-cbc -d -a -pbkdf2 -in $file -out $de_file -kfile ~/.tiup/keys/tiup.key
-            fi
-          done
-          rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
-          ls -l tiup-${{ github.repository_owner }}/keys
-
       - id: prepare-tbd
         name: Prepare TBD
         run: |
@@ -121,6 +105,29 @@ jobs:
           CI_NAME: githubaction
           TBD_CRI: none
 
+      - name: Decrypt keys
+        run: |
+          # add a random delay before actually publishing, this can help reduce manifest conflict
+          # when there are multiple jobs running in parallel
+          sleep $[ ( $RANDOM % 20 ) ]s
+
+          # make sure the repo is up-to-date
+          git fetch origin && git reset --hard origin/main
+
+          openssl version
+          mkdir -p ~/.tiup/keys/
+          echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+          for file in tiup-${{ github.repository_owner }}/keys/*
+          do
+            if [[ $file == *encrypt ]]
+            then
+              de_file=${file//.encrypt/}
+              openssl aes-256-cbc -d -a -pbkdf2 -in $file -out $de_file -kfile ~/.tiup/keys/tiup.key
+            fi
+          done
+          rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
+          ls -l tiup-${{ github.repository_owner }}/keys
+
       - id: publish-component
         name: Publish component package
         run: |
@@ -130,10 +137,6 @@ jobs:
             export os=linux
           fi
 
-          # add a random delay before actually publishing, this can help reduce manifest conflict
-          # when there are multiple jobs running in parallel
-          sleep $[ ( $RANDOM % 10 ) ]s
-
           pkg=`echo ${{ steps.build-component.outputs.PKG_META }} | base64 -d`
           echo $pkg
           pkgname=`echo $pkg | jq -r '.package'`
@@ -142,8 +145,6 @@ jobs:
           pkgdesc=`echo $pkg | jq -r '.description'`
           tarball=`echo $pkg | jq -r '.file'`
 
-          # make sure the repo is up-to-date
-          git pull
           $HOME/.tiup/bin/tiup mirror publish $pkgname $pkgver \
             $tarball \
             $entry \
