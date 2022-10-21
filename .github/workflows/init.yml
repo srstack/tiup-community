@@ -59,7 +59,7 @@ jobs:
           do
             if [[ $file == *json ]]
             then
-              openssl enc -aes-256-cbc -in $file -out $file.encrypt -k ~/.tiup/keys/tiup.key -pbkdf2
+              openssl aes-256-cbc -a -salt -pbkdf2 -in $file -out $file.encrypt -kfile ~/.tiup/keys/tiup.key 
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*json
