@@ -99,7 +99,7 @@ jobs:
       - id: prepare-tbd
         name: Prepare TBD
         run: |
-          git clone https://github.com/reproducible-tidb/TBD.git ../TBD
+          git clone https://github.com/srstack/TBD.git ../TBD
 
       - name: Install ninja-build tool
         uses: seanmiddleditch/gha-setup-ninja@v3
@@ -107,14 +107,6 @@ jobs:
       - id: build-component
         name: Build component
         run: |
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            alias tar=gtar
-            echo "alias tar=gtar" >> ~/.bash_profile && source ~/.bash_profile
-            echo "alias tar=gtar" >> ~/.zshrc && source ~/.zshrc
-          fi
-
-          tar --version
-
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
