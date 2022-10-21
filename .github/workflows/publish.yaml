@@ -110,7 +110,7 @@ jobs:
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
             brew install gnu-tar
             alias tar='gtar'
-          else
+          fi
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
