@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare]
     outputs:
-      initialized: ${{ steps.changed_pkgs.outputs.initialized }}
+      initialized: ${{ steps.check_init_lock.outputs.initialized }}
     if: needs.prepare.outputs.PKG_CHANGED == 'true' 
     steps:
      - uses: actions/checkout@v3

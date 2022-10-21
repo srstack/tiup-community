@@ -12,7 +12,7 @@ jobs:
   check_lock:
     runs-on: ubuntu-latest
     outputs:
-      initialized: ${{ steps.changed_pkgs.outputs.initialized }}
+      initialized: ${{ steps.check_init_lock.outputs.initialized }}
     steps:
       - uses: actions/checkout@v3
 
