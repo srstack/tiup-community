@@ -7,8 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches:
-      #- main
-      - tbd
+      - main
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -16,8 +15,8 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      PKG_CHANGED: ${{ steps.changed_dirs.outputs.changed }}
-      PKG_LIST: ${{ steps.changed_dirs.outputs.matrix }}
+      PKG_CHANGED: ${{ steps.changed_pkgs.outputs.changed }}
+      PKG_LIST: ${{ steps.changed_pkgs.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,26 +25,29 @@ jobs:
         id: changed_pkgs
         working-directory: ${{ github.workspace }}/packages
         run: |
+          set -x
           export DIFF_BASE="HEAD~1"
-          changed_pkgs=`git diff --numstat $DIFF_BASE packages |\
-            awk -F ' ' '{print $3}'`
+          changed_pkgs=`git diff --numstat $DIFF_BASE |\
+            awk -F ' ' '{print $3}' |\
+            grep -E '^packages/' |\
+            grep -E '\.TBD$'`
+
           pkgs=()
           for pkg in $changed_pkgs; do
-            if [[ $pkg != "*.TBD" ]]; then
-              continue
-            fi
             pkgs+=($pkg)
           done
+
           if [ "${#pkgs[@]}" -lt 1 ]; then
             echo "no package changed"
-            echo "::set-output name=changed::false"
+            echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "${#pkgs[@]} package(s) changed"
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> $GITHUB_OUTPUT
           fi
+
           output=`printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s -c .`
           echo $output
-          echo "::set-output name=matrix::$output"
+          echo "matrix=$output" >> $GITHUB_OUTPUT
 
   build-component:
     needs: [prepare]
@@ -81,6 +83,7 @@ jobs:
         name: Install tiup
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+          ~/.tiup/bin/tiup mirror set tiup-${{ github.repository_owner }}
 
       - name: Decrypt keys
         run: |
@@ -100,40 +103,70 @@ jobs:
 
       - id: prepare-tbd
         name: Prepare TBD
-        run: git clone https://github.com/reproducible-tidb/TBD.git ../TBD
+        run: |
+          git clone https://github.com/reproducible-tidb/TBD.git ../TBD
 
       - name: Install ninja-build tool
         uses: seanmiddleditch/gha-setup-ninja@v3
 
-      - id: Build-component
-        name: build component
+      - id: build-component
+        name: Build component
         run: |
           export TBD_CACHE=`mktemp -d`
-          echo ::set-output name=TBD_CACHE::"$TBD_CACHE"
-          ../TBD/TBD.sh $pkg
+          echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
+          result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -1`
+          result_enc=`echo -n $result | base64 -w 0`
+          echo "PKG_META=$result_enc" >> $GITHUB_OUTPUT
         env:
           CI_NAME: githubaction
           TBD_CRI: none
 
-      # - id: Publish-component
+      - id: publish-component
+        name: Publish component package
+        run: |
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            export os=darwin
+          else
+            export os=linux
+          fi
 
+          # add a random delay before actually publishing, this can help reduce manifest conflict
+          # when there are multiple jobs running in parallel
+          sleep $[ ( $RANDOM % 10 ) ]s
 
-      # - name: Encrypt keys
-      #   run: |
-      #     mkdir -p ~/.tiup/keys
-      #     echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
-      #     for file in tiup-${{ github.repository_owner }}/keys/*
-      #     do
-      #       if [[ $file == *json ]]
-      #       then
-      #         openssl aes-256-cbc -a -salt -pbkdf2 -in $file -out $file.encrypt -kfile ~/.tiup/keys/tiup.key 
-      #       fi
-      #     done
-      #     rm -rf tiup-${{ github.repository_owner }}/keys/*json
-      #     ls -l tiup-${{ github.repository_owner }}/keys
+          pkg=`echo ${{ steps.build-component.outputs.PKG_META }} | base64 -d`
+          echo $pkg
+          pkgname=`echo $pkg | jq -r '.package'`
+          pkgver=`echo $pkg | jq -r '.version'`
+          entry=`echo $pkg | jq -r '.entrypoint'`
+          pkgdesc=`echo $pkg | jq -r '.description'`
+          tarball=`echo $pkg | jq -r '.file'`
+
+          # make sure the repo is up-to-date
+          git pull
+          $HOME/.tiup/bin/tiup mirror publish $pkgname $pkgver \
+            $tarball \
+            $entry \
+            --os $os \
+            --arch ${{ matrix.arch }} \
+            --key tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
+
+      - name: Encrypt keys
+        run: |
+          mkdir -p ~/.tiup/keys
+          echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
+          for file in tiup-${{ github.repository_owner }}/keys/*
+          do
+            if [[ $file == *json ]]
+            then
+              openssl aes-256-cbc -a -salt -pbkdf2 -in $file -out $file.encrypt -kfile ~/.tiup/keys/tiup.key
+            fi
+          done
+          rm -rf tiup-${{ github.repository_owner }}/keys/*json
+          ls -l tiup-${{ github.repository_owner }}/keys
       
-      # - name: Push Mirror
-      #   uses: actions-js/push@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     message: publish component to ${{ github.repository_owner }}
+      - name: Push Mirror
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: publish component to ${{ github.repository_owner }}

@@ -3,6 +3,7 @@ pkgver=1.5.2
 pkgrel=1
 pkgdesc='Zstandard - Fast real-time compression algorithm'
 pkgurl="https://github.com/facebook/zstd/releases/download/v${pkgver}/zstd-${pkgver}.tar.zst"
+entrypoint=zstd
 
 build() {
   cd ${pkgname}-${pkgver}
@@ -20,7 +21,9 @@ build() {
 
 package() {
   DESTDIR="${pkgdir}" cmake --install build
-  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
+  cp LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/"
+
   cd ${pkgdir}
   ln -sf zstd "usr/bin/zstdmt"
 }
