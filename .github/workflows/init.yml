@@ -7,9 +7,30 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  check_lock:
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    outputs:
+      initialized: ${{ steps.changed_pkgs.outputs.initialized }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check Init lock
+        id: check_init_lock
+        run: |
+          if [ ! -f init.lock ]
+          then
+            echo "initialized=false" >> $GITHUB_OUTPUT
+          else
+            echo "tiup-${{ github.repository_owner }} mirror has been initialized"
+            echo "Initialized=true" >> $GITHUB_OUTPUT
+          fi
+
   init-mirror:
     runs-on: ubuntu-latest
-
+    needs: [check_lock]
+    if: needs.check_lock.outputs.initialized == 'false'
     steps:
       - uses: actions/checkout@v3
 
