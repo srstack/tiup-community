@@ -5,14 +5,29 @@ name: Publish component
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  # push:
-  #   branches: [ "main" ]
+  push:
+    branches:
+      #- main
+      - tbd
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   publish-component:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        arch:
+          - amd64
+          - arm64
+        exclude:
+          - os: macos-latest
+            arch: arm64
+          - os: macos-latest
+            arch: amd64
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -44,10 +59,23 @@ jobs:
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
           tree
-      
-      # - id: Build-component
-      #   name: build component
 
+      - id: prepare-tbd
+        name: Prepare TBD
+        run: git clone https://github.com/reproducible-tidb/TBD.git ../TBD
+
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
+
+      - id: Build-component
+        name: build component
+        run: |
+          export TBD_CACHE=`mktemp -d`
+          echo ::set-output name=TBD_CACHE::"$TBD_CACHE"
+          find ./packages/*.TBD -type f -exec ../TBD/TBD.sh {} \;
+        env:
+          CI_NAME: githubaction
+          TBD_CRI: none
 
       # - id: Publish-component
 

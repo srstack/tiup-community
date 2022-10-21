@@ -1,0 +1,26 @@
+pkgname=zstd
+pkgver=1.5.2
+pkgrel=1
+pkgdesc='Zstandard - Fast real-time compression algorithm'
+pkgurl="https://github.com/facebook/zstd/releases/download/v${pkgver}/zstd-${pkgver}.tar.zst"
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export CFLAGS+=' -ffat-lto-objects'
+  export CXXFLAGS+=' -ffat-lto-objects'
+
+  cmake -S build/cmake -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DZSTD_BUILD_STATIC=ON \
+    -DZSTD_PROGRAMS_LINK_SHARED=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  cd ${pkgdir}
+  ln -sf zstd "usr/bin/zstdmt"
+}
