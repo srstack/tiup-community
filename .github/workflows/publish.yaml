@@ -70,7 +70,10 @@ jobs:
 
       - id: Build-component
         name: build component
-        run: find ./packages/*.TBD -type f -exec ../TBD/TBD.sh {} \;
+        run: |
+          export TBD_CACHE=`mktemp -d`
+          echo ::set-output name=TBD_CACHE::"$TBD_CACHE"
+          find ./packages/*.TBD -type f -exec ../TBD/TBD.sh {} \;
         env:
           CI_NAME: githubaction
           TBD_CRI: none
