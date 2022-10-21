@@ -1,6 +1,6 @@
 pkgname=zstd
 pkgver=1.5.2
-pkgrel=1
+pkgrel=2
 pkgdesc='Zstandard - Fast real-time compression algorithm'
 pkgurl="https://github.com/facebook/zstd/releases/download/v${pkgver}/zstd-${pkgver}.tar.zst"
 entrypoint=zstd

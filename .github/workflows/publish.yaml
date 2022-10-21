@@ -107,6 +107,10 @@ jobs:
       - id: build-component
         name: Build component
         run: |
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            brew install gnu-tar
+            alias tar='gtar'
+          else
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
@@ -141,7 +145,6 @@ jobs:
         name: Publish component package
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            brew install gnu-tar
             export os=darwin
           else
             export os=linux
