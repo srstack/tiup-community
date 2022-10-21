@@ -108,8 +108,7 @@ jobs:
         name: Build component
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            brew install gnu-tar
-            alias tar='gtar'
+            echo "alias tar=gtar" >> ~./.bash_profile && source ~/.bash_profile
           fi
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
