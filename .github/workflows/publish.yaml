@@ -61,6 +61,14 @@ jobs:
         arch:
           - amd64
           - arm64
+        # exclude:
+        #   - os: macos-latest
+        #     arch: arm64
+        #   - os: macos-latest
+        #     arch: amd64
+      max-parallel: 1 # don't parallel
+      fail-fast: true
+
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -94,17 +102,17 @@ jobs:
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
-          result_enc=`echo -n $result | base64 -w 0`
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            export result_enc=`echo -n $result | base64`
+          else
+            export result_enc=`echo -n $result | base64 -w 0`
+          fi
           echo "PKG_META=$result_enc" >> $GITHUB_OUTPUT
         env:
           TBD_CRI: none
 
       - name: Decrypt keys
         run: |
-          # add a random delay before actually publishing, this can help reduce manifest conflict
-          # when there are multiple jobs running in parallel
-          sleep $[ ( $RANDOM % 20 ) ]s
-
           # make sure the repo is up-to-date
           git fetch origin && git reset --hard origin/main
 
@@ -138,9 +146,8 @@ jobs:
           entry=`echo $pkg | jq -r '.entrypoint'`
           pkgdesc=`echo $pkg | jq -r '.description'`
           tarball=`echo $pkg | jq -r '.file'`
-
           echo ::set-output name=COMP_NAME::$pkgname-$pkgver-$os-${{ matrix.arch }}
-          
+
           $HOME/.tiup/bin/tiup mirror publish $pkgname $pkgver \
             $tarball \
             $entry \
@@ -150,6 +157,7 @@ jobs:
 
       - name: Encrypt keys and clean up
         run: |
+          # clean up
           mkdir -p ~/.tiup/keys
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
@@ -160,6 +168,7 @@ jobs:
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*json
+          rm -rf tiup-${{ github.repository_owner }}/commits
           rm -rf ninja-build
 
       - name: Push Mirror
