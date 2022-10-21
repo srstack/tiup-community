@@ -59,7 +59,7 @@ jobs:
             fi
           done
           rm -rf tiup-${{ github.repository_owner }}/keys/*encrypt
-          tree
+          ls -l tiup-${{ github.repository_owner }}/keys
 
       - id: prepare-tbd
         name: Prepare TBD
@@ -93,7 +93,7 @@ jobs:
       #       fi
       #     done
       #     rm -rf tiup-${{ github.repository_owner }}/keys/*json
-      #     tree
+      #     ls -l tiup-${{ github.repository_owner }}/keys
       
       # - name: Push Mirror
       #   uses: actions-js/push@master
