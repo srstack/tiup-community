@@ -82,11 +82,6 @@ jobs:
         arch:
           - amd64
           - arm64
-        # exclude:
-        #   - os: macos-latest
-        #     arch: arm64
-        #   - os: macos-latest
-        #     arch: amd64
       max-parallel: 1 # don't parallel
       fail-fast: true
 
@@ -94,7 +89,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - id: Install-tiup
         name: Install tiup
         run: |
@@ -146,6 +141,7 @@ jobs:
         name: Publish component package
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            brew install gnu-tar
             export os=darwin
           else
             export os=linux
