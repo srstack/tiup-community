@@ -2,7 +2,7 @@ pkgname=hmcl
 _ver=3.5.3
 _build=223
 pkgver="${_ver}+${_build}"
-pkgrel=2
+pkgrel=3
 pkgdesc='A Minecraft Launcher which is multi-functional, cross-platform and popular.'
 pkgurl=(
   "https://raw.githubusercontent.com/huanghongxun/HMCL/javafx/LICENSE"
