@@ -1,0 +1,18 @@
+pkgname=tiup
+pkgver=v1.11.0
+pkgrel=1
+pkgdesc='Command-line component management tool'
+pkggit="https://github.com/12Cat-TiDB/tiup.git"
+entrypoint=tiup
+
+build() {
+  export PATH=$PATH:$GOPATH/bin
+  export BUILD_FLAGS='-trimpath -mod=readonly -modcacherw -buildvcs=false'
+
+  make tiup
+}
+
+package() {
+  mkdir -p "${pkgdir}"
+  cp bin/tiup "${pkgdir}"
+}

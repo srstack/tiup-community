@@ -101,20 +101,30 @@ jobs:
         run: |
           git clone https://github.com/reproducible-tidb/TBD.git ../TBD
 
+      - name: Set up Go 1.19
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19.x
+        id: go
+
       - name: Install ninja-build tool
         uses: seanmiddleditch/gha-setup-ninja@v3
 
       - id: build-component
         name: Build component
         run: |
+          export GOPATH=${GITHUB_WORKSPACE}/go
+          export PATH=$PATH:$GOPATH/bin
           export TBD_CACHE=`mktemp -d`
           echo "TBD_CACHE=$TBD_CACHE" >> $GITHUB_OUTPUT
+
           result=`../TBD/TBD.sh ${{ matrix.pkg }} | tail -n 1`
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
             export result_enc=`echo -n $result | base64`
           else
             export result_enc=`echo -n $result | base64 -w 0`
           fi
+
           echo "PKG_META=$result_enc" >> $GITHUB_OUTPUT
         env:
           TBD_CRI: none
