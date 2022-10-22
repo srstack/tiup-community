@@ -11,47 +11,19 @@ pkgdesc='Next generation of Minecraft server, compatible with Spigot plugins and
 pkgurl=(
   "papermc.${pkgver}.jar"::"https://papermc.io/api/v2/projects/paper/versions/${_pkgver}/builds/${_build}/downloads/paper-${_pkgver}-${_build}.jar"
   "https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
-  "minecraft-server-${_mng_ver}.tar.gz"::"https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v${_mng_ver}.tar.gz"
 )
-entrypoint=papermc
+entrypoint=start.sh
 _game="papermc"
-_server_root="srv/papermc"
 
 build() {
-  make -C "minecraft-server-${_mng_ver}" clean
-
-	make -C "minecraft-server-${_mng_ver}" \
-		GAME=${_game} \
-		INAME=${_game} \
-		SERVER_ROOT=${_server_root} \
-		BACKUP_PATHS="world" \
-		GAME_USER=${_game} \
-		MAIN_EXECUTABLE=papermc_server.jar \
-		SERVER_START_CMD="java -Xms512M -Xmx1024M -jar ./papermc_server.jar nogui" \
-		all
+  echo "bin package, skip build"
 }
 
 package() {
-  make -C "minecraft-server-${_mng_ver}" \
-		DESTDIR="${pkgdir}" \
-		GAME=${_game} \
-		INAME=${_game} \
-		install
-
-  mkdir -p "${pkgdir}/${_server_root}"
-  cp ${_game}.${pkgver}.jar "${pkgdir}/${_server_root}/${_game}.${pkgver}.jar"
-  mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
-  cp ${builddir}/LICENSE.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  cp ${_game}.${pkgver}.jar "${pkgdir}/${_game}.${pkgver}.jar"
+  cp ${builddir}/LICENSE.md "${pkgdir}/LICENSE"
 
   cd "${pkgdir}"
   cp ${srcdir}/start.sh "${pkgdir}/"
-  ln -s "usr/bin/${_game}" "${_game}"
-
-	# Link the log files
-	mkdir -p "${pkgdir}/var/log/"
-	mkdir -p "${pkgdir}/${_server_root}/logs"
-	ln -s "${_server_root}/logs" "${pkgdir}/var/log/${_game}"
-
-	# Give the group write permissions and set user or group ID on execution
-	chmod g+ws "${pkgdir}/${_server_root}"
+  ln -s "${_game}.${pkgver}.jar" "papermc.jar"
 }
