@@ -150,14 +150,14 @@ jobs:
           entry=`echo $pkg | jq -r '.entrypoint'`
           pkgdesc=`echo $pkg | jq -r '.description'`
           tarball=`echo $pkg | jq -r '.file'`
-          echo ::set-output name=COMP_NAME::$pkgname-$pkgver-$os-${{ matrix.arch }}
+          echo "COMP_NAME=$pkgname-$pkgver-$os-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
           $HOME/.tiup/bin/tiup mirror publish $pkgname $pkgver \
             $tarball \
             $entry \
             --os $os \
             --arch ${{ matrix.arch }} \
-            --desc $pkgdesc \
+            --desc "$pkgdesc" \
             --key tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
 
       - name: Encrypt keys and clean up
