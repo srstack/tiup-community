@@ -10,7 +10,9 @@ pkgurl=(
 )
 entrypoint=start.sh
 
-build () {}
+build () {
+	echo "bin package, skip build"
+}
 
 package() {
   mkdir -p "${pkgdir}/usr/share/{java/${pkgname},licenses/${pkgname}}"

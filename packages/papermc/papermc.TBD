@@ -9,9 +9,9 @@ pkgrel=1
 _mng_ver=1.0.2
 pkgdesc='Next generation of Minecraft server, compatible with Spigot plugins and offering uncompromising performance'
 pkgurl=(
-  "https://papermc.io/api/v2/projects/paper/versions/${_pkgver}/builds/${_build}/downloads/paper-${_pkgver}-${_build}.jar"
-  "https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
-  "https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v${_mng_ver}.tar.gz"
+  "papermc.${pkgver}.jar"::"https://papermc.io/api/v2/projects/paper/versions/${_pkgver}/builds/${_build}/downloads/paper-${_pkgver}-${_build}.jar"
+  "LICENSE_${pkgver}.md"::"https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
+  "minecraft-server-${_mng_ver}.tar.gz"::"https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v${_mng_ver}.tar.gz"
 )
 entrypoint=papermc
 _game="papermc"
@@ -39,6 +39,7 @@ package() {
 		install
 
   mkdir -p "${pkgdir}/${_server_root}"
+  cp ${_game}.${pkgver}.jar "${pkgdir}/${_server_root}/${_game}.${pkgver}.jar"
   mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
   cp ./LICENSE_${pkgver}.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 
