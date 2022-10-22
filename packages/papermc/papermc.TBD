@@ -45,7 +45,7 @@ package() {
 
   cd "${pkgdir}"
   cp ${srcdir}/start.sh "${pkgdir}/"
-  ln -s "${pkgdir}/usr/bin/${_game}" "${_game}"
+  ln -s "usr/bin/${_game}" "${_game}"
 
 	# Link the log files
 	mkdir -p "${pkgdir}/var/log/"
