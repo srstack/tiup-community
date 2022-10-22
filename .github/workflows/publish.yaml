@@ -83,7 +83,6 @@ jobs:
           - amd64
           - arm64
       max-parallel: 1 # don't parallel
-      fail-fast: true
 
     runs-on: ${{ matrix.os }}
 
@@ -118,6 +117,7 @@ jobs:
 
       - id: build-component
         name: Build component
+        continue-on-error: true
         run: |
           set +x
           export GOPATH=${GITHUB_WORKSPACE}/go
@@ -154,6 +154,7 @@ jobs:
 
       - id: publish-component
         name: Publish component package
+        continue-on-error: true
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
             export os=darwin
