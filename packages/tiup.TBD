@@ -1,6 +1,6 @@
 pkgname=tiup
 pkgver=v1.11.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Command-line component management tool'
 pkggit="https://github.com/12Cat-TiDB/tiup.git"
 entrypoint=tiup
