@@ -25,5 +25,5 @@ package() {
   cp LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/"
 
   cd ${pkgdir}
-  ln -sf zstd "usr/bin/zstdmt"
+  ln -sf usr/bin/zstdmt zstd
 }

@@ -67,7 +67,7 @@ jobs:
           echo "tiup-${{ github.repository_owner }} mirror uninitialized"
           echo "initialized=false" >> $GITHUB_OUTPUT
         else
-          echo "Initialized=true" >> $GITHUB_OUTPUT
+          echo "initialized=true" >> $GITHUB_OUTPUT
         fi
 
   build-component:
