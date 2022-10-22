@@ -157,6 +157,7 @@ jobs:
             $entry \
             --os $os \
             --arch ${{ matrix.arch }} \
+            --desc $pkgdesc \
             --key tiup-${{ github.repository_owner }}/keys/${{ github.repository_owner }}.json
 
       - name: Encrypt keys and clean up
