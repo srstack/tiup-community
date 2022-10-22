@@ -9,6 +9,10 @@ tmp/
 # Other files and folders
 .settings/
 
+# 
+go/
+ninja-build/
+
 # Executables
 *.swf
 *.air

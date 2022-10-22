@@ -90,6 +90,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create tmp branch
+        run: |
+          tmp="tmp-$RANDOM"
+          git branch $tmp
+          git checkout $tmp
+
       - id: Install-tiup
         name: Install tiup
         run: |
@@ -132,7 +138,7 @@ jobs:
       - name: Decrypt keys
         run: |
           # make sure the repo is up-to-date
-          git fetch origin && git reset --hard origin/main
+          git checkout main && git fetch origin && git reset --hard origin/main
           mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
