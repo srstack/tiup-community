@@ -10,7 +10,7 @@ _mng_ver=1.0.2
 pkgdesc='Next generation of Minecraft server, compatible with Spigot plugins and offering uncompromising performance'
 pkgurl=(
   "papermc.${pkgver}.jar"::"https://papermc.io/api/v2/projects/paper/versions/${_pkgver}/builds/${_build}/downloads/paper-${_pkgver}-${_build}.jar"
-  "LICENSE_${pkgver}.md"::"https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
+  "https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
   "minecraft-server-${_mng_ver}.tar.gz"::"https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v${_mng_ver}.tar.gz"
 )
 entrypoint=papermc
@@ -41,10 +41,11 @@ package() {
   mkdir -p "${pkgdir}/${_server_root}"
   cp ${_game}.${pkgver}.jar "${pkgdir}/${_server_root}/${_game}.${pkgver}.jar"
   mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
-  cp ./LICENSE_${pkgver}.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  cp ${builddir}/LICENSE.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 
   cd "${pkgdir}"
-  ln -s "$entrypoint" "${pkgdir}/usr/bin/${_game}"
+  cp ${srcdir}/start.sh "${pkgdir}/"
+  ln -s "${pkgdir}/usr/bin/${_game}" "${_game}"
 
 	# Link the log files
 	mkdir -p "${pkgdir}/var/log/"
