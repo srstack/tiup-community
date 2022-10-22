@@ -5,7 +5,7 @@ pkgver="${_ver}.${_build}"
 pkgrel=1
 pkgdesc='A Minecraft Launcher which is multi-functional, cross-platform and popular.'
 pkgurl=(
-  "LICENSE::https://raw.githubusercontent.com/huanghongxun/HMCL/javafx/LICENSE"
+  "https://raw.githubusercontent.com/huanghongxun/HMCL/javafx/LICENSE"
   "${pkgname}-${pkgver}-${pkgrel}.jar::https://github.com/huanghongxun/HMCL/releases/download/v${pkgver}/HMCL-${pkgver}.jar"
 )
 entrypoint=start.sh
@@ -15,7 +15,7 @@ build () {
 }
 
 package() {
-  mkdir -p "${pkgdir}/usr/share/{java/${pkgname},licenses/${pkgname}}"
+  mkdir -p "${pkgdir}/usr/share/java/${pkgname}" "${pkgdir}/usr/share/licenses/${pkgname}"
 
   cp start.sh "${pkgdir}/"
   cp "${pkgname}-${pkgver}-${pkgrel}.jar" "${pkgdir}/usr/share/java/${pkgname}/${pkgname}.jar"

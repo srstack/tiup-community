@@ -119,6 +119,7 @@ jobs:
       - id: build-component
         name: Build component
         run: |
+          set +x
           export GOPATH=${GITHUB_WORKSPACE}/go
           export PATH=$PATH:$GOPATH/bin
           export TBD_CACHE=`mktemp -d`
