@@ -1,0 +1,57 @@
+pkgname=papermc
+# curl -X GET "https://papermc.io/api/v2/projects/paper" -H  "accept: application/json"
+_pkgver=1.19.2
+# curl -X GET "https://papermc.io/api/v2/projects/paper/versions/${_pkgver}" -H  "accept: application/json"
+_build=112
+_license_commit=31f0137
+pkgver="${_pkgver}+b${_build}"
+pkgrel=1
+_mng_ver=1.0.2
+pkgdesc='Next generation of Minecraft server, compatible with Spigot plugins and offering uncompromising performance'
+pkgurl=(
+  "https://papermc.io/api/v2/projects/paper/versions/${_pkgver}/builds/${_build}/downloads/paper-${_pkgver}-${_build}.jar"
+  "https://raw.githubusercontent.com/PaperMC/Paper/${_license_commit}/LICENSE.md"
+  "https://github.com/Edenhofer/minecraft-server/archive/refs/tags/v${_mng_ver}.tar.gz"
+)
+entrypoint=papermc
+_game="papermc"
+_server_root="srv/papermc"
+
+build() {
+  make -C "minecraft-server-${_mng_ver}" clean
+
+	make -C "minecraft-server-${_mng_ver}" \
+		GAME=${_game} \
+		INAME=${_game} \
+		SERVER_ROOT=${_server_root} \
+		BACKUP_PATHS="world" \
+		GAME_USER=${_game} \
+		MAIN_EXECUTABLE=papermc_server.jar \
+		SERVER_START_CMD="java -Xms512M -Xmx1024M -jar ./papermc_server.jar nogui" \
+		all
+}
+
+package() {
+  make -C "minecraft-server-${_mng_ver}" \
+		DESTDIR="${pkgdir}" \
+		GAME=${_game} \
+		INAME=${_game} \
+		install
+
+  mkdir -p "${pkgdir}/${_server_root}"
+  mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
+  cp ${_game}.${pkgver}.jar "${pkgdir}/${_server_root}/${_game}.${pkgver}.jar"
+  cp ./LICENSE_${pkgver}.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  cd "${pkgdir}"
+	ln -s "${_game}.${pkgver}.jar" "${pkgdir}/${_server_root}/${_game}_server.jar"
+  ln -s "$entrypoint" "${pkgdir}/usr/bin/${_game}"
+
+	# Link the log files
+	mkdir -p "${pkgdir}/var/log/"
+	mkdir -p "${pkgdir}/${_server_root}/logs"
+	ln -s "${_server_root}/logs" "${pkgdir}/var/log/${_game}"
+
+	# Give the group write permissions and set user or group ID on execution
+	chmod g+ws "${pkgdir}/${_server_root}"
+}

@@ -1,0 +1,21 @@
+pkgname=hmcl
+_ver=3.5.3
+_build=223
+pkgver="${_ver}.${_build}"
+pkgrel=1
+pkgdesc='A Minecraft Launcher which is multi-functional, cross-platform and popular.'
+pkgurl=(
+  "LICENSE::https://raw.githubusercontent.com/huanghongxun/HMCL/javafx/LICENSE"
+  "${pkgname}-${pkgver}-${pkgrel}.jar::https://github.com/huanghongxun/HMCL/releases/download/v${pkgver}/HMCL-${pkgver}.jar"
+)
+entrypoint=start.sh
+
+build () {}
+
+package() {
+  mkdir -p "${pkgdir}/usr/share/{java/${pkgname},licenses/${pkgname}}"
+
+  cp start.sh "${pkgdir}/"
+  cp "${pkgname}-${pkgver}-${pkgrel}.jar" "${pkgdir}/usr/share/java/${pkgname}/${pkgname}.jar"
+  cp "LICENSE" "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
