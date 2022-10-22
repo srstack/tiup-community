@@ -40,11 +40,9 @@ package() {
 
   mkdir -p "${pkgdir}/${_server_root}"
   mkdir -p "${pkgdir}/usr/share/licenses/${pkgname}"
-  cp ${_game}.${pkgver}.jar "${pkgdir}/${_server_root}/${_game}.${pkgver}.jar"
   cp ./LICENSE_${pkgver}.md "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 
   cd "${pkgdir}"
-	ln -s "${_game}.${pkgver}.jar" "${pkgdir}/${_server_root}/${_game}_server.jar"
   ln -s "$entrypoint" "${pkgdir}/usr/bin/${_game}"
 
 	# Link the log files
