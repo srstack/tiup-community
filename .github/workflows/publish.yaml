@@ -138,7 +138,7 @@ jobs:
       - name: Decrypt keys
         run: |
           # make sure the repo is up-to-date
-          git checkout main && git fetch origin && git reset --hard origin/main
+          git checkout main --force && git fetch origin && git reset --hard origin/main
           mkdir -p ~/.tiup/keys/
           echo ${{ secrets.TIUP_KEY}} > ~/.tiup/keys/tiup.key
           for file in tiup-${{ github.repository_owner }}/keys/*
