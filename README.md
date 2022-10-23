@@ -20,7 +20,7 @@ git commit -a -m "delete init lock"
 git push
 ```
 
-4. RUN Init Mirror
+4. Init Mirror
 
 Run Init-Mirror Github Action Workflow
 
