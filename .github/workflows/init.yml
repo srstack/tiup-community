@@ -83,6 +83,7 @@ jobs:
         run: |
           ln -s tiup-${{ github.repository_owner }} docs
           touch init.lock
+          mkdir packages
       
       - name: Push Mirror
         uses: actions-js/push@master
