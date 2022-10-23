@@ -3,15 +3,17 @@ tiup community
 
 
 ## init tiup mirror 
-1. create TIUP_KEY 
+1. fork 12cat/tiup-community
+
+2. create TIUP_KEY 
 ```
 # creare rsa key peer
 openssl rand -base64 32 > tiup.key
 ```
-2. SET Github Actions secrets
+3. SET Github Actions secrets
 Store the resulting `tiup.key` in Github Actions secrets, named `TIUP_KEY`
 
-3. Delete init.lock
+4. Delete init.lock
 ```
 rm init.lock
 git commit -a -m "delete init lock"
