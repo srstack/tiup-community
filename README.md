@@ -21,6 +21,7 @@ git push
 ```
 
 4. RUN Init Mirror
+
 Run Init-Mirror Github Action Workflow
 
 ## Config Github Page
